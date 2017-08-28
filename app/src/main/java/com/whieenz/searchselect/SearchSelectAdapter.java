@@ -1,6 +1,7 @@
 package com.whieenz.searchselect;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,11 @@ import java.util.List;
 
 
 public class SearchSelectAdapter extends BaseAdapter {
-	private List<String> Datas;
+	private List<Enity> Datas;
 	private Context context;
 	private LayoutInflater inflater;
 
-	public SearchSelectAdapter(Context ctx, List<String> datas){
+	public SearchSelectAdapter(Context ctx, List<Enity> datas) {
 		this.context = ctx;
 		this.Datas = datas;
 		this.inflater = LayoutInflater.from(ctx);
@@ -28,7 +29,7 @@ public class SearchSelectAdapter extends BaseAdapter {
 
 	@Override
 	public String getItem(int i) {
-		return Datas.get(i);
+		return Datas.get(i).getCity();
 	}
 
 	@Override
@@ -47,7 +48,13 @@ public class SearchSelectAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.info.setText(Datas.get(i));
+		if (Datas.get(i).isSelCity()) {
+			//设置为红色
+			holder.info.setTextColor(Color.RED);
+		} else
+			holder.info.setTextColor(Color.GREEN);
+
+		holder.info.setText(Datas.get(i).getCity());
 		return view;
 	}
 

@@ -26,6 +26,7 @@ import java.util.List;
 
 public class SerachSelectDialog extends Dialog {
 
+
     public SerachSelectDialog(Context context, int themeResId) {
         super(context, themeResId);
     }
@@ -59,7 +60,7 @@ public class SerachSelectDialog extends Dialog {
         private String positiveButtonText;
         private String negativeButtonText;
         private String singleButtonText;
-        private List<String> listData;
+        private List<Enity> listData;
         private View.OnClickListener positiveButtonClickListener;
         private View.OnClickListener negativeButtonClickListener;
         private View.OnClickListener singleButtonClickListener;
@@ -76,6 +77,8 @@ public class SerachSelectDialog extends Dialog {
         ImageButton closeBtn;
         TextView titleView;
         private boolean state = false;
+        /*选中的集合数据*/
+        public List<Enity> selectList;
 
         public Builder(Context context) {
             //这里传入自定义的style，直接影响此Dialog的显示效果。style具体实现见style.xml
@@ -90,6 +93,7 @@ public class SerachSelectDialog extends Dialog {
             closeBtn = (ImageButton) layout.findViewById(R.id.imb_dialog_select_close);
             titleView = (TextView) layout.findViewById(R.id.tv_dialog_select_title);
             dialog.addContentView(layout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            selectList = new ArrayList<>();
         }
 
         public Builder setTitle(String title) {
@@ -102,7 +106,7 @@ public class SerachSelectDialog extends Dialog {
             return this;
         }
 
-        public void setListData(List<String> listData) {
+        public void setListData(List<Enity> listData) {
             this.listData = listData;
         }
 
@@ -123,6 +127,16 @@ public class SerachSelectDialog extends Dialog {
          */
         private SerachSelectDialog create() {
             titleView.setText(title);
+
+
+//            for (Enity bean:listData) {
+//
+//                if (selectList.contains(bean)) {
+//                    listData.get(i).setSelCity(true);
+//                }
+//
+//            }
+
             final SearchSelectAdapter sa = new SearchSelectAdapter(context,listData);
             listView.setAdapter(sa);
             listView.invalidate();
@@ -152,7 +166,7 @@ public class SerachSelectDialog extends Dialog {
                     dialog.dismiss();
                 }
             });
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            dialog.setOnDismissListener(new OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
 
@@ -162,8 +176,18 @@ public class SerachSelectDialog extends Dialog {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                    if (selectList.contains(listData.get(position))) {
+                        selectList.remove(listData.get(position));
+                    } else {
+                        selectList.add(listData.get(position));
+                    }
+                    listData.get(position).setSelCity(!listData.get(position).isSelCity());
                     selectedListiner.onSelected(sa.getItem(position));
-                    dialog.dismiss();
+                    sa.notifyDataSetChanged();
+
+//                    dialog.dismiss();
                 }
             });
             dialog.setContentView(layout);
@@ -174,33 +198,51 @@ public class SerachSelectDialog extends Dialog {
             return  dialog;
 
         }
-        public List<String> searchItem(String name) {
-            ArrayList<String> mSearchList = new ArrayList<String>();
+
+        public List<Enity> searchItem(String name) {
+            ArrayList<Enity> mSearchList = new ArrayList<>();
             for (int i = 0; i < listData.size(); i++) {
-                int index = listData.get(i).indexOf(name);
+                int index = listData.get(i).getCity().indexOf(name);
                 // 存在匹配的数据
                 if (index != -1) {
+
+                    if (selectList.contains(listData.get(i))) {
+                        listData.get(i).setSelCity(true);
+                    }
+
                     mSearchList.add(listData.get(i));
                 }
             }
             return mSearchList;
         }
 
-        public void updateLayout(List<String> newList) {
+        public void updateLayout(final List<Enity> newList) {
             final SearchSelectAdapter sa = new SearchSelectAdapter(context,newList);
             listView.setAdapter(sa);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    if (selectList.contains(newList.get(position))) {
+                        selectList.remove(newList.get(position));
+                    } else {
+                        selectList.add(newList.get(position));
+                    }
+
+                    newList.get(position).setSelCity(!newList.get(position).isSelCity());
+
+                    sa.notifyDataSetChanged();
+
                     selectedListiner.onSelected(sa.getItem(position));
-                    dialog.dismiss();
+
+//                    dialog.dismiss();
                 }
             });
         }
 
 
 
-        public void setSelectedListiner(SerachSelectDialog.Builder.OnSelectedListiner selectedListiner) {
+        public void setSelectedListiner(OnSelectedListiner selectedListiner) {
             this.selectedListiner = selectedListiner;
         }
 
