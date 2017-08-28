@@ -8,9 +8,6 @@ import java.io.Serializable;
 
 public class Enity implements Serializable {
 
-
-
-
     private String city;
     private boolean selCity = false;//默认不选中
 

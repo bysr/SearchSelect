@@ -26,7 +26,6 @@ import java.util.List;
 
 public class SerachSelectDialog extends Dialog {
 
-
     public SerachSelectDialog(Context context, int themeResId) {
         super(context, themeResId);
     }

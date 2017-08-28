@@ -12,6 +12,9 @@ import android.widget.TextView;
 import java.util.List;
 
 
+
+
+
 public class SearchSelectAdapter extends BaseAdapter {
 	private List<Enity> Datas;
 	private Context context;
