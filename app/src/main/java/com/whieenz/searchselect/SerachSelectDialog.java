@@ -221,7 +221,8 @@ public class SerachSelectDialog extends Dialog {
                     }
 
                     selectList.clear();
-                    dialog.dismiss();
+
+                    sa.notifyDataSetChanged();
                 }
             });
 
@@ -277,21 +278,69 @@ public class SerachSelectDialog extends Dialog {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    newList.get(position).setSelCity(!newList.get(position).isSelCity());
                     if (selectList.contains(newList.get(position))) {
                         selectList.remove(newList.get(position));
                     } else {
                         selectList.add(newList.get(position));
                     }
 
-                    newList.get(position).setSelCity(!newList.get(position).isSelCity());
 
                     sa.notifyDataSetChanged();
 
                     selectedListiner.onSelected(sa.getItem(position));
-
 //                    dialog.dismiss();
                 }
             });
+
+
+            BtnSelect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    for (int i = 0; i < listData.size(); i++) {
+
+                        listData.get(i).setSelCity(true);
+                    }
+
+                    selectList.clear();
+                    selectList.addAll(listData);
+
+
+                    sa.notifyDataSetChanged();
+                }
+            });
+
+
+            BtnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (selectedListiner != null) {
+                        selectedListiner.onSaved(selectList);
+                    }
+                    dialog.dismiss();
+                }
+            });
+
+            BtnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    for (int i = 0; i < listData.size(); i++) {
+
+                        listData.get(i).setSelCity(false);
+                    }
+
+                    selectList.clear();
+
+                    sa.notifyDataSetChanged();
+                }
+            });
+
+
+
+
         }
 
 
@@ -302,7 +351,6 @@ public class SerachSelectDialog extends Dialog {
 
         public static abstract class OnSelectedListiner{
             public abstract void onSelected(String String);
-
             public abstract void onSaved(List<Enity> list);
 
         }
