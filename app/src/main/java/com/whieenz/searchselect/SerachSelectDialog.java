@@ -136,14 +136,15 @@ public class SerachSelectDialog extends Dialog {
         private SerachSelectDialog create() {
             titleView.setText(title);
 
+            //拿到上次选中的数据
+            for (Enity enity : listData) {
+                if (enity.isSelCity() && !selectList.contains(enity)) {
+                    selectList.add(enity);
+                }
 
-//            for (Enity bean:listData) {
-//
-//                if (selectList.contains(bean)) {
-//                    listData.get(i).setSelCity(true);
-//                }
-//
-//            }
+            }
+
+
 
             final SearchSelectAdapter sa = new SearchSelectAdapter(context,listData);
             listView.setAdapter(sa);
@@ -171,8 +172,9 @@ public class SerachSelectDialog extends Dialog {
             closeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectList.clear();
-                    dialog.dismiss();
+
+
+                    dismiss();
                 }
             });
             dialog.setOnDismissListener(new OnDismissListener() {
@@ -207,7 +209,7 @@ public class SerachSelectDialog extends Dialog {
                     if (selectedListiner != null) {
                         selectedListiner.onSaved(selectList);
                     }
-                    dialog.dismiss();
+                    dismiss();
                 }
             });
 
@@ -252,6 +254,11 @@ public class SerachSelectDialog extends Dialog {
             dialog.setCanceledOnTouchOutside(false);
             return  dialog;
 
+        }
+
+        private void dismiss() {
+
+            dialog.dismiss();
         }
 
         public List<Enity> searchItem(String name) {
@@ -306,7 +313,6 @@ public class SerachSelectDialog extends Dialog {
                     selectList.clear();
                     selectList.addAll(listData);
 
-
                     sa.notifyDataSetChanged();
                 }
             });
@@ -319,7 +325,7 @@ public class SerachSelectDialog extends Dialog {
                     if (selectedListiner != null) {
                         selectedListiner.onSaved(selectList);
                     }
-                    dialog.dismiss();
+                    dismiss();
                 }
             });
 
