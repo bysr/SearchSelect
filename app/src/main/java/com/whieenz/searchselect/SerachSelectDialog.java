@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -79,6 +80,9 @@ public class SerachSelectDialog extends Dialog {
         /*选中的集合数据*/
         public List<Enity> selectList;
 
+        private Button BtnSelect, BtnCancel, BtnSave;
+
+
         public Builder(Context context) {
             //这里传入自定义的style，直接影响此Dialog的显示效果。style具体实现见style.xml
             this.context = context;
@@ -93,6 +97,10 @@ public class SerachSelectDialog extends Dialog {
             titleView = (TextView) layout.findViewById(R.id.tv_dialog_select_title);
             dialog.addContentView(layout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             selectList = new ArrayList<>();
+            BtnSelect = layout.findViewById(R.id.BtnSelect);
+            BtnSave = layout.findViewById(R.id.BtnSave);
+            BtnCancel = layout.findViewById(R.id.BtnCancel);
+
         }
 
         public Builder setTitle(String title) {
@@ -120,6 +128,7 @@ public class SerachSelectDialog extends Dialog {
             this.negativeButtonClickListener = listener;
             return this;
         }
+
 
         /**
          * 单按钮对话框和双按钮对话框的公共部分在这里设置
@@ -162,6 +171,7 @@ public class SerachSelectDialog extends Dialog {
             closeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    selectList.clear();
                     dialog.dismiss();
                 }
             });
@@ -172,17 +182,62 @@ public class SerachSelectDialog extends Dialog {
                 }
             });
 
+            BtnSelect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    for (int i = 0; i < listData.size(); i++) {
+
+                        listData.get(i).setSelCity(true);
+                    }
+
+                    selectList.clear();
+                    selectList.addAll(listData);
+
+
+                    sa.notifyDataSetChanged();
+                }
+            });
+
+
+            BtnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (selectedListiner != null) {
+                        selectedListiner.onSaved(selectList);
+                    }
+                    dialog.dismiss();
+                }
+            });
+
+            BtnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    for (int i = 0; i < listData.size(); i++) {
+
+                        listData.get(i).setSelCity(false);
+                    }
+
+                    selectList.clear();
+                    dialog.dismiss();
+                }
+            });
+
+
+
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    listData.get(position).setSelCity(!listData.get(position).isSelCity());
 
                     if (selectList.contains(listData.get(position))) {
                         selectList.remove(listData.get(position));
                     } else {
                         selectList.add(listData.get(position));
                     }
-                    listData.get(position).setSelCity(!listData.get(position).isSelCity());
                     selectedListiner.onSelected(sa.getItem(position));
                     sa.notifyDataSetChanged();
 
@@ -247,6 +302,9 @@ public class SerachSelectDialog extends Dialog {
 
         public static abstract class OnSelectedListiner{
             public abstract void onSelected(String String);
+
+            public abstract void onSaved(List<Enity> list);
+
         }
 
         public SerachSelectDialog show() {

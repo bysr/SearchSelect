@@ -33,13 +33,15 @@ public class MainActivity extends AppCompatActivity {
 //                textView.setText(mDatas.get(position).toString());
 
 
-                for (int i = 0; i < alert.selectList.size(); i++) {
+            }
 
+            @Override
+            public void onSaved(List<Enity> list) {
 
-                    Log.d("vivi", "onSelected: " + alert.selectList.get(i).toString());
+                for (int i = 0; i < list.size(); i++) {
+                    Log.d("vivi", "onSelected: " + list.get(i).toString());
 
                 }
-
 
 
             }
